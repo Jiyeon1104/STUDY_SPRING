@@ -1,0 +1,321 @@
+///
+/// Inverse by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+/* Typography */
+
+	html {
+		font-size: 15pt;
+
+		@include breakpoint('<=xlarge') {
+			font-size: 12pt;
+		}
+
+		@include breakpoint('<=medium') {
+			font-size: 12pt;
+		}
+
+		@include breakpoint('<=small') {
+			font-size: 11pt;
+		}
+	}
+
+	body {
+		background-color: _palette(bg);
+		color: _palette(fg);
+	}
+
+	body, input, select, textarea {
+		font-family: _font(family);
+		font-weight: _font(weight);
+		font-size: 1rem;
+		line-height: 2.15;
+	}
+
+	a {
+		@include vendor('transition', 'color #{_duration(transition)} ease-in-out');
+		text-decoration: none;
+	}
+
+	strong, b {
+		font-weight: _font(weight-bold);
+	}
+
+	em, i {
+		font-style: italic;
+	}
+
+	p {
+		margin: 0 0 _size(element-margin) 0;
+
+		&.special {
+			text-align: center;
+			margin: 0 auto _size(element-margin) auto;
+			max-width: 46rem;
+
+			@include breakpoint('<=medium') {
+				max-width: calc(100% - 6rem);
+				width: 100%;
+			}
+
+			@include breakpoint('<=small') {
+				max-width: 100%;
+				width: 100%;
+			}
+		}
+	}
+
+	header {
+		h1, h2, h3, h4, h5, h6 {
+			&:before {
+				background-color: _palette(accent1);
+				content: '';
+				display: block;
+				height: 2px;
+				margin: 0 auto _size(element-margin) auto;
+				width: 4rem;
+			}
+
+			&.left {
+				&:before {
+					margin-left: 0;
+					margin-right: 0;
+
+					@include breakpoint('<=medium') {
+						margin-left: auto;
+						margin-right: auto;
+					}
+				}
+			}
+
+			&.alt {
+				&:before {
+					background-color: _palette(bg);
+				}
+			}
+		}
+
+		&.special {
+			text-align: center;
+			margin-bottom: _size(element-margin) * 2;
+		}
+
+		&.major {
+			text-align: center;
+			margin: 0 auto _size(element-margin) auto;
+			max-width: 46rem;
+
+			@include breakpoint('<=medium') {
+				max-width: calc(100% - 6rem);
+				width: 100%;
+			}
+
+			@include breakpoint('<=small') {
+				max-width: 100%;
+				width: 100%;
+			}
+		}
+	}
+
+	h1, h2, h3, h4, h5, h6 {
+		font-weight: _font(weight-bold);
+		line-height: 1.5;
+		margin: 0 0 (_size(element-margin) * 0.75) 0;
+
+		a {
+			color: inherit;
+			text-decoration: none;
+		}
+	}
+
+	h1 {
+		font-size: 4rem;
+		line-height: 1.2;
+	}
+
+	h1 + p {
+		font-size: 1.5rem;
+	}
+
+	h2 {
+		font-size: 3rem;
+		line-height: 1.3;
+	}
+
+	h3 {
+		font-size: 1.25rem;
+	}
+
+	h4 {
+		font-size: 1rem;
+	}
+
+	h5 {
+		font-size: 0.9rem;
+	}
+
+	h6 {
+		font-size: 0.7rem;
+	}
+
+	@include breakpoint('<=large') {
+		h1 {
+			font-size: 3.75rem;
+		}
+	}
+
+	@include breakpoint('<=medium') {
+		body, input, select, textarea {
+			line-height: 1.75;
+		}
+
+		p {
+			&.thin {
+				max-width: 100%;
+			}
+		}
+
+		h1, h2, h3, h4, h5, h6 {
+			&.heading {
+				&.left {
+					&:before {
+						margin-right: auto;
+						margin-left: auto;
+					}
+				}
+			}
+		}
+	}
+
+	@include breakpoint('<=small') {
+		h1 {
+			font-size: 2.5rem;
+			line-height: 1.3;
+		}
+
+		h1 + p {
+			font-size: 1.25rem;
+		}
+
+		h2 {
+			font-size: 1.75rem;
+			line-height: 1.5;
+		}
+
+		h3 {
+			font-size: 1.25rem;
+		}
+	}
+
+	sub {
+		font-size: 0.8rem;
+		position: relative;
+		top: 0.5rem;
+	}
+
+	sup {
+		font-size: 0.8rem;
+		position: relative;
+		top: -0.5rem;
+	}
+
+	blockquote {
+		border-left: solid 0.5rem;
+		font-style: italic;
+		margin: 0 0 _size(element-margin) 0;
+		padding: (_size(element-margin) * 0.5) 0 (_size(element-margin) * 0.5) _size(element-margin);
+	}
+
+	code {
+		border-radius: _size(border-radius);
+		border: solid 1px;
+		font-family: _font(family-fixed);
+		font-size: 0.9rem;
+		margin: 0 0.25rem;
+		padding: 0.25rem 0.65rem;
+	}
+
+	pre {
+		-webkit-overflow-scrolling: touch;
+		font-family: _font(family-fixed);
+		font-size: 0.9rem;
+		margin: 0 0 _size(element-margin) 0;
+
+		code {
+			display: block;
+			line-height: 1.75;
+			padding: 1rem 1.5rem;
+			overflow-x: auto;
+		}
+	}
+
+	hr {
+		border: 0;
+		border-bottom: solid 1px;
+		margin: _size(element-margin) 0;
+
+		&.major {
+			margin: (_size(element-margin) * 2) 0;
+		}
+
+		@include breakpoint('<=small') {
+			&.major {
+				margin: (_size(element-margin) * 1.5) 0;
+			}
+		}
+	}
+
+	@mixin color-typography($p: null) {
+
+		@if $p != null {
+			background-color: _palette($p, bg);
+			color: _palette($p, fg);
+		}
+
+		input, select, textarea {
+			color: _palette($p, fg-bold);
+		}
+
+		a {
+			@if $p != null {
+				color: _palette($p, fg-bold);
+			}
+			@else {
+				color: _palette(accent1);
+			}
+
+			&:hover {
+				@if $p != null {
+					color: transparentize(_palette($p, fg-bold), 0.35);
+				}
+				@else {
+					color: lighten(_palette(accent1), 10);
+				}
+			}
+		}
+
+		strong, b {
+			color: _palette($p, fg-bold);
+		}
+
+		h1, h2, h3, h4, h5, h6 {
+			color: _palette($p, fg-bold);
+		}
+
+		blockquote {
+			border-left-color: _palette($p, border);
+		}
+
+		code {
+			background: _palette($p, border-bg);
+			border-color: _palette($p, border);
+		}
+
+		hr {
+			border-bottom-color: _palette($p, border);
+		}
+	}
+
+	@include color-typography;

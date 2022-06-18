@@ -1,0 +1,133 @@
+///
+/// Inverse by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+/* Footer */
+	$accent: invert;
+
+	#footer {
+		color: _palette($accent, fg);
+		text-align: center;
+
+		.wrapper {
+			padding-bottom: 0;
+		}
+
+		h1, h2, h3, h4, h5 {
+			color: _palette($accent, fg-bold);
+		}
+
+		input[type="text"],
+		input[type="password"],
+		input[type="email"],
+		input[type="tel"],
+		input[type="search"],
+		input[type="url"],
+		select,
+		textarea {
+			color: _palette(fg);
+		}
+
+		.copyright {
+			background: _palette(accent3);
+			color: _palette($accent, fg-light);
+			margin-top: 6rem;
+			padding: _size(element-margin) * 2 _size(element-margin);
+		}
+
+		.content {
+			@include vendor('display','flex');
+			@include vendor('justify-content','space-between');
+			margin: (_size(element-margin) * 2) 0 _size(element-margin) 0;
+
+			.form {
+				background: _palette(bg);
+				border-radius: _size(border-radius);
+				box-shadow: 0px 15px 59px -20px rgba(0,0,0,0.35);
+				margin-right: _size(element-margin);
+				padding: _size(element-margin);
+				text-align: left;
+				width: 60rem;
+
+				> :last-child {
+					margin-bottom: 0;
+				}
+
+				form {
+					margin-bottom: 0;
+
+					ul {
+						@include vendor('justify-content','flex-start');
+						margin-bottom: 0;
+					}
+				}
+			}
+
+			.icons {
+				@include color(invert);
+				background: none;
+				list-style: none;
+				margin: 0;
+				padding: 0;
+				width: 40rem;
+
+				li {
+					@include vendor('display','flex');
+					background: _palette(accent1);
+					border-radius: _size(border-radius);
+					box-shadow: 0px 15px 59px -20px rgba(0,0,0,0.35);
+					margin-bottom: _size(element-margin);
+					padding: _size(element-margin);
+					text-align: left;
+
+					.icon {
+						font-size: 1.5rem;
+						margin-right: 1rem;
+						line-height: 2rem;
+					}
+
+					strong {
+						display: block;
+					}
+
+					&:last-child {
+						margin: 0;
+					}
+				}
+			}
+
+			@include breakpoint('<=medium') {
+				@include vendor('flex-direction','column');
+
+				.form {
+					margin-bottom: _size(element-margin);
+					margin-right: 0;
+					width: 100%;
+
+					ul {
+						&.actions {
+							@include vendor('justify-content', 'center');
+						}
+					}
+				}
+
+				.icons {
+					width: 100%;
+				}
+			}
+		}
+
+		@include breakpoint('<=medium') {
+			.copyright {
+				margin-top: 5rem;
+			}
+		}
+
+		@include breakpoint('<=small') {
+			.copyright {
+				margin-top: 3rem;
+			}
+		}
+	}

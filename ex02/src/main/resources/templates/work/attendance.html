@@ -1,0 +1,22 @@
+<!--사용자가 보게 될 결과 화면을 출력, VIEW에서의 사용자의 입력 및 행동을 Controller에게 전달-->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<form action = "/work/attendence" method = "post">
+    <div>
+        이름을 입력하세요 : <input type = text name = "name" placeholder="이름">
+    </div>
+    <span>
+            <button value="출근" name="checkInfo" type="submit">출근</button>
+            <button value="퇴근" name="checkInfo" type="submit">퇴근</button>
+        </span>
+</body>
+</html>

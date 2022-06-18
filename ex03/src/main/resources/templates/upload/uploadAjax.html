@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>파일 업로드</title>
+</head>
+<style>
+    .uploadResult {
+        width: 100%;
+    }
+
+    .uploadResult ul {
+        display: flex;
+        justify-content: center;
+    }
+
+    .uploadResult ul li{
+        list-style: none;
+        padding: 10px;
+    }
+
+</style>
+<body>
+<h1>Upload with Ajax</h1>
+<div class="uploadDiv">
+    <input type="file" name="uploadFile" multiple>
+</div>
+
+<div class="uploadResult">
+    <ul></ul>
+</div>
+<button id="uploadBtn">upload</button>
+<div class="bigPictureWrapper">
+    <div class="bigPicture"></div>
+</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    let regex = new RegExp("(.*?)\.(exe|sh|zip|alz)");
+    let uploadResult = $(".uploadResult ul");
+
+    // 이미지 원본이 있는지 검사
+    let check = false;
+    // 애니메이션이 진행 중인지 검사
+    let progress = false;
+    // 이전에 클릭한 이미지 경로 저장
+    let temp;
+    function showImage(filePath){
+
+        // 만약 temp에 무언가가 들어가 있다면 (not undefined)
+        if(temp){
+            // 현재 클릭한 썸네일의 경로와 이전에 클릭했던 썸네일의 경로를 비교
+            if(filePath == temp){
+                return;
+            }
+        }
+
+        if(temp){
+            //만약 이전에 눌렀던 썸네일과 동일하다면 애니메이션을 막아줌
+            if(filePath == temp){
+                // 똑같은 거 또 누르지 않게 막아주기
+                return;
+            }
+        }
+
+        // 애니메이션이 진행 중일 경우 trud
+        if(progress) { return; }
+        // 만약 애니메이션 진행 중이 아닐 때에는
+        // 썸네일을 클릭했기 때문에 progress를 true로 변경시켜줌
+        progress = true;
+        // 정상적으로 해당 썸네일의 원본이 보이게 된다면
+        // 클릭한 썸네일의 경로를 temp에 담아줌
+        temp = filePath;
+
+        let time = 0;
+
+        // 만약 check 가 true라면 원본 이미지가 이미 보여지고 있는 상태
+        if(check){
+            progress = true;
+            // 이미 있는 원본 이미지를 없애줌
+            $(".bigPicture").animate({width:"0%", height:"0%"}, 1000);
+            setTimeout(function(){
+                $(".bigPictureWrapper").hide();
+                // 애니메이션이 다 끝났을 때1
+                progress = false;
+           },950);
+            // 이미 있는 원본 이미지가 없어지는 데 걸리는  시간을 타임에 담아놓음
+            time = 1000;
+        }else{
+            progress = true;
+        }
+        setTimeout(function(){
+            $(".bigPictureWrapper").css("display", "flex").show();
+            $(".bigPicture").html("<img src='/upload/display?fileName=" + filePath + "'>")
+                .animate({width:"100%", height:"100%"}, 1000);
+            // 이미지 원본이 보이고 있음
+            check = true;
+
+            setTimeout(function(){
+                // 애니메이션이 다 끝났을 때
+                progress = false;
+            }, 1000);
+        // 만약 원본 이미지가 없었다면 time에는 1000이 들어가서 없어지는 동안 기다리게 되고
+            // 원본 이미지가 없었다면 time에는 초기값인 0이 들어가서 클릭한 썸네일의 원본이 바로 보이게 됨
+        }, time);
+    }
+
+    $(".bigPictureWrapper").on("click", function(){
+        temp = "";
+        // 원본 이미지 클릭 시 사라지는 이벤트 진행 중
+        progress = true;
+        $(".bigPicture").animate({width:"0%", height:"0%"}, 1000);
+
+        setTimeout(function(){
+            $(".bigPictureWrapper").hide();
+            // 이미지 원본이 없어짐
+            check = false;
+            progress = false;
+        },1000);
+    })
+
+    function checkExtension(fileName, fileSize){
+        if(regex.test(fileName)){
+            alert("업로드 할 수 없는 파일의 형식입니다.");
+            return false;
+        }
+
+        if(fileSize >= 5242880){
+            alert("파일 사이즈 초과");
+            return false;
+        }
+
+        return true;
+    }
+
+    function showUploadResult(files){
+        let str ="";
+        $(files).each(function(i, file){
+            str += "<li>";
+            if(file.image){
+                //encodeURIComponent("") : 쿼리스트링에 여러 특수문자로 인한 오류를 해결할 수 있다.
+                str += "<a href=\"javascript:showImage(\'" + file.uploadPath + "/" + file.fileName +"\');\"><img src='/upload/display?fileName=" + file.uploadPath + "/s_" + file.fileName + "'></a>";
+
+            }else{
+                str += "<a href='/upload/download?fileName=" + file.uploadPath + "/" + file.fileName + "'><img src='/img/attach.png' width='100'></a>";
+            }
+            str += "<span data-file='" + file.uploadPath + "/s_" + file.fileName + "' style='cursor: pointer;'>x</span>"
+            str += "</li>"
+        });
+        uploadResult.append(str);
+    }
+
+    $(".uploadResult").on("click", "span", function(){
+        let $target = $(this).data("file");
+        let $li = $(this).closest("li");
+
+        $.ajax({
+            url: "delete",
+            type: "post",
+            data: {fileName: $target},
+            success: function(){
+                $li.remove();
+            }
+        });
+    });
+
+    $("#uploadBtn").on("click", function(e){
+        let formData = new FormData();
+        let inputFile = $("input[name='uploadFile']");
+        // console.log(inputFile);
+        let files = inputFile[0].files;
+        // console.log(files);
+        for(let i=0; i<files.length; i++){
+            if(!checkExtension(files[i].name, files[i].size)){ return; }
+            formData.append("uploadFile", files[i]);
+        }
+
+        $.ajax({
+            url: "uploadAjaxAction",
+            type: "post",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(files){
+                showUploadResult(files);
+            }
+        });
+
+    });
+</script>
+</html>

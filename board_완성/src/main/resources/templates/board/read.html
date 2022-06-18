@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>게시글 상세보기</title>
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <style>
+        body {transform: scale(0.8);}
+        .line {
+            border-bottom: 1px solid #ff8b77;
+        }
+        li {
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main -->
+    <div id="main">
+        <div class="wrapper">
+            <div class="inner">
+
+                <!-- Elements -->
+                <header class="major">
+                    <h1>Board</h1>
+                    <p>게시글 상세보기</p>
+                </header>
+                <!-- Table -->
+                <h3><a id="goList" class="button small">목록 보기</a></h3>
+                <div class="content">
+                    <div class="form">
+                        <form method="post" action="/board/remove" th:object="${board}">
+                            <div class="fields">
+                                <div class="field">
+                                    <h4>번호</h4>
+                                    <input type="text" readonly th:field="*{boardBno}"/>
+                                </div>
+                                <div class="field">
+                                    <h4>제목</h4>
+                                    <input type="text" readonly th:field="*{boardTitle}"/>
+                                </div>
+                                <div class="field">
+                                    <h4>내용</h4>
+                                    <textarea rows="6" style="resize:none" readonly th:field="*{boardContent}"></textarea>
+                                </div>
+                                <div class="field">
+                                    <h4>작성자</h4>
+                                    <input type="text" readonly th:field="*{boardWriter}"/>
+                                </div>
+                                <div class="field">
+                                    <h4>첨부파일</h4>
+                                </div>
+                                <div class="field">
+                                    <div class="uploadResult">
+                                        <ul></ul>
+                                    </div>
+                                </div>
+                                <div class="bigPictureWrapper">
+                                    <div class="bigPicture"></div>
+                                </div>
+                            </div>
+                            <ul class="actions special">
+                                <li>
+                                    <input type="button" class="button" value="수정" onclick="goUpdate()"/>
+                                    <input type="submit" class="button" value="삭제"/>
+                                </li>
+                            </ul>
+                            <ul class="icons">
+                                <li style="display: block">
+                                    <span class="icon solid fa-envelope"></span>
+                                    <strong>댓글</strong>
+                                </li>
+                            </ul>
+                            <a href="javascript:void(0)" class="register button primary small" style="width: 100%">댓글 등록</a>
+                            <div style="display: none" class="register-form">
+                                <div>
+                                    <h4>작성자</h4>
+                                    <input type="text" name="replier" placeholder="Replier">
+                                </div>
+                                <div>
+                                    <h4>댓글</h4>
+                                    <textarea rows="6" name="reply" placeholder="Reply" style="resize: none"></textarea>
+                                </div>
+                                <div style="text-align: right">
+                                    <a href="javascript:void(0)" class="finish button primary small">등록</a>
+                                    <a href="javascript:void(0)" class="cancel button primary small">취소</a>
+                                </div>
+                            </div>
+                            <ul class="replies"></ul>
+                        </form>
+                        <div class="paging" style="text-align: center"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<!-- Scripts -->
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/jquery.dropotron.min.js"></script>
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/util.js"></script>
+<script src="/assets/js/main.js"></script>
+<script src="/assets/js/reply.js"></script>
+<script th:inline="javascript">
+    let pageNum = 1;
+    let boardBno = [[${board.boardBno}]];
+    let paging = [[${criteria.listLink}]];
+    const replyUL = $("ul.replies");
+    const $uploadResult = $(".uploadResult ul");
+    // 이미지 원본이 있는 지 검사
+    let check = false;
+    // 애니메이션이 진행중인 지 검사
+    let progress = false;
+    // 이전에 클릭한 이미지 경로 저장
+    let temp = "";
+
+    function showImage(filePath){
+
+        // 만약 temp에 무언가가 들어가 있다면(undefined가 아니라면)
+        if(temp){
+            //현재 클릭한 썸네일의 경로와 이전에 클릭했던 썸네일의 경로를 비교한다.
+            if(filePath == temp){
+                //만약 이전에 눌렀던 썸네일과 동일하다면 애니메이션을 막아준다.
+                //똑같은 거 또 누르지 않게 막아주기
+                return;
+            }
+        }
+
+        // 애니메이션이 진행중일 경우 true
+        if(progress) { return; }
+        // 만약 애니메이션 진행중이 아닐 때에는
+        // 썸네일을 클릭했기 때문에 progress를 true로 변경시켜준다.
+        progress = true;
+
+        //정상적으로 해당 썸네일의 원본이 보이게 된다면,
+        //클릭한 썸네일의 경로를 temp에 담아준다.
+        temp = filePath;
+
+        let time = 0;
+
+        if(check){ //만약 check가 true라면 원본 이미지가 이미 보여지고 있는 상태
+
+            //이미 있는 원본 이미지를 없애준다.
+            $(".bigPicture").animate({width:"0%", height:"0%"}, 1000);
+            setTimeout(function(){
+                $(".bigPictureWrapper").hide();
+                // 애니메이션이 다 끝났을 때
+                progress = false;
+            },950);
+
+            //이미 있는 원본 이미지가 없어지는 데에 걸리는 시간을 time에 담아놓는다.
+            time = 1000;
+        }
+        setTimeout(function(){
+            $(".bigPictureWrapper").css("display", "flex").show();
+            $(".bigPicture").html("<img src='/upload/display?fileName=" + filePath + "'>")
+                .animate({width:"100%", height:"100%"}, 1000);
+            // 이미지 원본이 보이고 있음.
+            check = true;
+
+            setTimeout(function(){
+                // 애니메이션이 다 끝났을 때
+                progress = false;
+            }, 1000);
+
+            //    만약 원본 이미지가 있었다면 time에는 1000이 들어가서 없어지는 동안 기다리게 되고
+            //    원본 이미지가 없었다면 time에는 초기값인 0이 들어가서 클릭한 썸네일의 원본이 바로 보이게 된다.
+        }, time);
+    }
+
+    $(".bigPictureWrapper").on("click", function(){
+        temp = "";
+        // 원본 이미지 클릭 시 사라지는 이벤트 진행중
+        progress = true;
+        $(".bigPicture").animate({width:"0%", height:"0%"}, 1000);
+
+        setTimeout(function(){
+            $(".bigPictureWrapper").hide();
+            //이미지 원본 안보임
+            check = false;
+            //애니메이션이 다 끝났을 때
+            progress = false;
+        },1000);
+    })
+
+    function showUploadResult(files){
+        let str ="";
+        $(files).each(function(i, file){
+            str += "<li data-filename='" + file.fileName.substring(file.fileName.indexOf("_") + 1) + "' data-uuid='" + file.uuid + "' data-uploadpath='" + file.uploadPath + "' data-image='" + file.image + "'>";
+            if(file.image){
+                str += "<a href=\"javascript:showImage(\'" + file.uploadPath + "/" + file.uuid + "_" + file.fileName +"\');\"><img src='/upload/display?fileName=" + file.uploadPath + "/s_" + file.uuid + "_"  + file.fileName + "'></a>";
+            }else{
+                str += "<a href='/upload/download?fileName=" + file.uploadPath + "/" + file.uuid + "_" + file.fileName + "'><img src='/images/attach.png' width='100'></a>";
+            }
+            str += "<p>" + file.fileName.substring(file.fileName.indexOf("_") + 1) + "</p>"
+            str += "</li>"
+        });
+        $uploadResult.html(str);
+    }
+
+    (function(){
+        $.getJSON("/upload/list", {boardBno: boardBno}, function(list){showUploadResult(list);})
+    })();
+
+
+
+    showList(pageNum);
+
+    function showList(page){
+        replyService.getList({bno: boardBno, page: page}, function(total, list){
+            let str = "";
+
+            if(list == null || list.length == 0){
+                replyUL.html("");
+                return;
+            }
+            //숙제, each문으로 바꾸기
+            //     수정되었을 때에는 수정된 날짜로 출력하기
+            //     출력된 시간 순으로 목록 구성하기
+
+
+            $.each(list, function(i, reply){
+                str += "<li>";
+                str += "<div style='display: flex; justify-content: space-between;'>";
+                str += "<strong style='display: block;'>" + reply.replyWriter + "</strong>";
+                str += "<div class='btns'>";
+                str += "<a class='modify " + reply.replyNumber + "' style='cursor: pointer;'>수정</a>"
+                str += "<a class='finish " + reply.replyNumber + "' style='display: none;cursor: pointer;'>수정완료</a>"
+                str += "&nbsp;&nbsp;<a class='remove " + reply.replyNumber + "' style='cursor: pointer;'>삭제</a>"
+                str += "</div>";
+                str += "</div>";
+                str += "<div style='display: flex; justify-content: space-between;'>";
+                str += "<p class='" + reply.replyNumber + "'>" + reply.replyContent + "</p>";
+                str += "<p><strong>";
+                str += reply.replyRegisterDate == reply.replyUpdateDate ? replyService.getReplyDateByJavascript(reply.replyRegisterDate)
+                        : replyService.getReplyDateByController(reply.replyUpdateDate);
+                str += "</strong></p>";
+                str += "</div>";
+                str += "<div class='line'></div>";
+                str += "</li>";
+            });
+
+            replyUL.html(str);
+            showReplyPage(total);
+
+        //     for(let i=0; i<list.length; i++){
+        //         str += "<li>";
+        //         str += "<strong>" + list[i].replyWriter + "</strong>";
+        //         str += "<div style='display: flex; justify-content: space-between;'>";
+        //         str += "<p>" + list[i].replyContent + "</p>"
+        //         str += "<p><strong>" + replyService.getReplyDateByJavascript(list[i].replyRegisterDate) + "</strong></p>"
+        //         str += "</div>";
+        //         str += "<div class='line'></div>";
+        //         str += "</li>";
+        //     }
+        //     replyUL.html(str);
+        //     showReplyPage(total);
+        });
+    }
+
+    let updateCheck = false;
+
+    //댓글 삭제
+    $(".replies").on("click", "div.btns a.remove", function(e){
+        e.preventDefault();
+        if(updateCheck) {
+            alert("이미 수정중인 댓글이 있습니다.");
+            return;
+        }
+        replyService.remove(this.classList[1], function(result){
+            alert(result);
+            showList(pageNum);
+        });
+    });
+
+    //댓글 수정
+    $(".replies").on("click", "div.btns a.modify", function(e){
+        e.preventDefault();
+        if(updateCheck) {
+            alert("이미 수정중인 댓글이 있습니다.");
+            return;
+        }
+        let replyNumber = this.classList[1];
+        let str = "";
+
+        $("a." + replyNumber).show();
+        $(this).hide();
+
+        str += "<textarea class='" + replyNumber + "' style='resize: none;'>";
+        str += $("p." + replyNumber).text();
+        str += "</textarea>";
+
+        $("p." + replyNumber).replaceWith(str);
+        $("textarea." + replyNumber).css("width", "75%");
+
+        updateCheck = true;
+    });
+
+    //수정 완료
+    $(".replies").on("click", "div.btns a.finish", function(e){
+       e.preventDefault();
+       let replyNumber = this.classList[1];
+       replyService.modify({replyNumber: replyNumber, replyContent: $("textarea." + replyNumber).val()}, function(result){
+           alert(result);
+           showList(pageNum);
+           updateCheck = false;
+       })
+    });
+
+    function showReplyPage(total){
+        let endPage = Math.ceil(pageNum / 10.0) * 10;
+        let startPage = endPage - 9;
+        let realEnd = Math.ceil(total / 10.0);
+        const $paging = $(".paging");
+
+        if(endPage > realEnd){
+            endPage = realEnd;
+        }
+
+        let prev = startPage > 1;
+        let next = endPage * 10 < total;
+        let str = "";
+
+        if(prev){
+            str += "<a class='changePage' href='" + (startPage - 1) + "'><code>&lt;</code></a>"
+        }
+        for(let i = startPage; i <= endPage; i++){
+            str += pageNum == i ? "<code>" + i + "</code>" : "<a class='changePage' href='" + i + "'><code>" + i + "</code></a>";
+        }
+        if(next){
+            str += "<a class='changePage' href='" + (endPage + 1) + "'><code>&gt;</code></a>"
+        }
+        $paging.html(str);
+    }
+
+    //이벤트 위임 ( $(...).on("event", "자식요소", callback) )
+    //기존 문서에 작성되지 않은 HTML 코드에 이벤트를 줄 때에는,
+    //컴파일 순서 상 DOM으로 작성한 코드가 더 늦게 실행되기 때문에,
+    //기존 문서에 작성된 HTML코드에 이벤트를 주고, 그 안에 추가할 자식 요소에 이벤트를 전달하는 형식으로 개발한다.
+
+    $(".paging").on("click", "a.changePage", function(e){
+        e.preventDefault();
+        pageNum = $(this).attr("href");
+        showList(pageNum);
+    });
+
+    $(".finish").click(function(e){
+        e.preventDefault();
+        const $replyWriter = $("input[name='replier']").val();
+        const $replyContent = $("textarea[name='reply']").val();
+
+        if(!$replyWriter || !$replyContent){
+            alert("내용을 입력해주세요.");
+            return;
+        }
+
+        replyService.add({boardBno: boardBno, replyWriter: $replyWriter, replyContent: $replyContent},
+        function(result){
+            $("input[name='replier']").val("");
+            $("textarea[name='reply']").val("");
+            showList(1);
+            $(".register-form").hide();
+            $(".register").show();
+        });
+    })
+
+
+    $(".register").on("click", function(e){
+        e.preventDefault(); //기존 이벤트 없애기
+        $(".register-form").show();
+        $(this).hide();
+    });
+
+    $(".cancel").on("click", function(e){
+       e.preventDefault();
+       $(".register-form").hide();
+       $(".register").show();
+    });
+
+    function goUpdate(){
+        location.href = '/board/modify' + paging + '&boardBno=' + boardBno;
+    }
+
+    $("a#goList").click(function(e){
+        e.preventDefault();
+        location.href = "/board/list" + paging;
+    });
+
+    // replyService.add({
+    //     replyContent: "JS Module Test",
+    //     replyWriter: "hds1234",
+    //     boardBno: boardBno
+    // }, function(result){
+    //     alert(result);
+    // }, function(a, b, c){console.log(a, b, c)});
+
+    // replyService.get(101, function(reply){
+    //     console.log(reply);
+    // });
+
+    // replyService.remove(101, function(result){
+    //     alert(result);
+    // });
+
+    // replyService.modify({
+    //     rno: 31,
+    //     replyContent: "PATCH Ajax 통신 완료"
+    // }, function(result){
+    //     alert(result);
+    // });
+
+    // replyService.getList({bno: boardBno, page: 2}, function(list){
+    //     console.log(list);
+    // })
+
+</script>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

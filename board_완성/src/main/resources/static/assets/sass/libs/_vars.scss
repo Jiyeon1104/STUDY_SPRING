@@ -1,0 +1,59 @@
+///
+/// Inverse by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+// Misc.
+	$misc: (
+		z-index-base:		10000
+	);
+
+// Duration.
+	$duration: (
+		menu:				0.5s,
+		transition:			0.2s
+	);
+
+// Size.
+	$size: (
+		border-radius:		4px,
+		element-height:		3.25rem,
+		element-margin:		2rem,
+		container-width:	80rem,
+		header-height:		3.25rem,
+		menu-width:			20rem
+	);
+
+// Font.
+	$font: (
+		family:				('Lato', Arial, Helvetica, sans-serif),
+		family-fixed:		('Courier New', monospace),
+		weight:				300,
+		weight-bold:		700
+	);
+
+// Palette.
+	$palette: (
+		bg:					#ffffff,
+		bg-alt:				#fafafa,
+		fg:					#424242,
+		fg-bold:			#424242,
+		fg-light:			#bbbbbb,
+		border:				rgba(144,144,144,0.25),
+		border-bg:			rgba(144,144,144,0.075),
+
+		accent1:			#ff8b77,
+		accent2:			#6d64e7,
+		accent3:			#6158dd,
+
+		invert: (
+			bg:				#000000,
+			fg:				#ffffff,
+			fg-bold:		#ffffff,
+			fg-light:		rgba(255,255,255,0.4),
+			border:			rgba(255,255,255,0.25),
+			border-bg:		rgba(255,255,255,0.075),
+			highlight:		accent1
+		)
+	);

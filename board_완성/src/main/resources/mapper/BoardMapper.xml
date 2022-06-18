@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.board.mapper.BoardMapper">
+    <select id="getList" resultType="boardVO">
+        <![CDATA[
+        SELECT BOARD_BNO, BOARD_TITLE, BOARD_CONTENT, BOARD_WRITER, BOARD_REGISTER_DATE, BOARD_UPDATE_DATE
+        FROM
+        (
+            SELECT /*+ INDEX_DESC(TBL_BOARD SYS_C007186) */
+            ROWNUM RN, BOARD_BNO, BOARD_TITLE, BOARD_CONTENT, BOARD_WRITER, BOARD_REGISTER_DATE, BOARD_UPDATE_DATE
+            FROM TBL_BOARD
+            WHERE
+        ]]>
+            <trim prefix="(" prefixOverrides="OR" suffix=") AND">
+                <foreach item="type" collection="types">
+                    <trim prefix="OR">
+                        <choose>
+                            <when test="type == 'T'.toString()">
+                                (BOARD_TITLE LIKE '%'||#{keyword}||'%')
+                            </when>
+                            <when test="type == 'C'.toString()">
+                                (BOARD_CONTENT LIKE '%'||#{keyword}||'%')
+                            </when>
+                            <when test="type == 'W'.toString()">
+                                (BOARD_WRITER LIKE '%'||#{keyword}||'%')
+                            </when>
+                        </choose>
+                    </trim>
+                </foreach>
+            </trim>
+        <![CDATA[
+            ROWNUM <= #{pageNum} * #{amount}
+        )
+        WHERE RN > (#{pageNum} - 1) * #{amount}
+        ]]>
+    </select>
+
+    <insert id="insert">
+        <selectKey keyProperty="boardBno" resultType="long" order="BEFORE">
+            SELECT SEQ_BOARD.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TBL_BOARD
+        (BOARD_BNO, BOARD_TITLE, BOARD_CONTENT, BOARD_WRITER)
+        VALUES(#{boardBno}, #{boardTitle}, #{boardContent}, #{boardWriter})
+    </insert>
+
+    <select id="get" resultType="boardVO">
+        SELECT BOARD_BNO, BOARD_TITLE, BOARD_CONTENT, BOARD_WRITER, BOARD_REGISTER_DATE, BOARD_UPDATE_DATE
+        FROM TBL_BOARD WHERE BOARD_BNO = #{boardBno}
+    </select>
+
+    <delete id="delete">
+        DELETE FROM TBL_BOARD WHERE BOARD_BNO = #{boardBno}
+    </delete>
+
+    <update id="update">
+        UPDATE TBL_BOARD
+        SET BOARD_TITLE = #{boardTitle}, BOARD_CONTENT = #{boardContent},
+            BOARD_WRITER = #{boardWriter}, BOARD_UPDATE_DATE = SYSDATE
+        WHERE BOARD_BNO = #{boardBno}
+    </update>
+
+    <select id="getTotal" resultType="_int">
+        SELECT COUNT(BOARD_BNO) FROM TBL_BOARD
+    </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

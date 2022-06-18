@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>장비 강화</title>
+    <style th:inline="text">
+        div#weapon{
+            display: flex;
+            justify-content: center;
+            background: #47a777;
+        }
+
+        div.scroll{
+            width: 33%;
+        }
+
+        div#scroll{
+            display: flex;
+            justify-content: space-between;
+            background: #47a7777a;
+        }
+
+        div#scroll input[type='button']{
+            width: 100%;
+            cursor: pointer;
+            border: none;
+            height: 100px;
+        }
+
+        div#scroll div:hover{
+            background: #f44336b8;
+        }
+
+        /*만약 해당 경로가 인식되지 않으면 이미지를 지웠다 다시 추가하도록 한다!*/
+        div#scroll-10 input[type='button']{
+            background: url('/scroll_10.png') no-repeat;
+            background-size: 100px 100px;
+            background-position: center;
+        }
+        div#scroll-60 input[type='button']{
+            background: url('/scroll_60.png') no-repeat;
+            background-size: 100px 100px;
+            background-position: center;
+        }
+        div#scroll-100 input[type='button']{
+            background: url('/scroll_100.png') no-repeat;
+            background-size: 100px 100px;
+            background-position: center;
+        }
+
+        div#string{
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6em;
+            font-weight: bold;
+            background: #a7d5be;
+        }
+
+        div.string{
+            width: 33%;
+            background: #47a7777a;
+        }
+
+    </style>
+</head>
+<body>
+<div wrap>
+<div id="weapon">
+    <div>
+        <img src="/weapon.png" alt="이미지 없음">
+    </div>
+</div>
+<div id="scroll">
+    <div id="scroll-10" class="scroll string-10">
+        <input type="button">
+    </div>
+    <div id="scroll-60" class="scroll string-60">
+        <input type="button">
+    </div>
+    <div id="scroll-100" class="scroll string-100">
+        <input type="button">
+    </div>
+</div>
+<div id="string">
+    <div id="string-10" class="string">
+        <p>10% 공격력 주문서</p>
+        <p>공격력 + 80</p>
+    </div>
+    <div id="string-60" class="string">
+        <p>60% 공격력 주문서</p>
+        <p>공격력 + 40</p>
+    </div>
+    <div id="string-100" class="string">
+        <p>100% 공격력 주문서</p>
+        <p>공격력 + 10</p>
+    </div>
+</div>
+</div>
+<div id = "hammer">
+<img src = "/hammer.gif">
+</div>
+<form action="/ex/upgrade" method="post" name="go">
+    <input type="hidden" id="choice" name="choice">
+</form>
+
+</body>
+
+<script src = "https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    let $scrolls = $("div.scroll");
+    let $scrollBtns = $("div.scroll input[type='button']");
+    let form = document.go;
+
+    $("#hammer").hide();
+
+    $.each($scrolls, function(index, item){
+        $(this).on("mouseover", function(){
+            $("div#" + $(this).attr("class").split(" ")[1]).css("background", "#f44336b8");
+        });
+
+        $(this).on("mouseout", function(){
+            $("div#" + $(this).attr("class").split(" ")[1]).css("background", "#47a7777a");
+        });
+    });
+
+    $scrollBtns.each(function(i, btn){
+        $(btn).on("click", function(){
+            console.log(i);
+            $("input[name='choice']").val(i);
+
+            $("#wrap").hide();
+            $("#hammer").show();
+            setTimeout(function(){$form.submit();}, 3000);
+        });
+    });
+</script>
+</html>
+
+

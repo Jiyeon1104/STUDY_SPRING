@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/jquery.dropotron.min.js"></script>
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/util.js"></script>
+<script src="/assets/js/main.js"></script>
+<script src="/assets/js/test.js"></script>
+<script>
+<!-- 모든 document가 다 완성이 되었을 때 가장 마지막에 이를 실행시킴-->
+<!-- JSON : 데이터를 전송하기 위해 저장하는 형식-->
+$(document).ready(function(){
+console.log(testService);
+
+    testService.test1(function(result){
+        console.log(result);
+    });
+
+    testService.test2("지연" ,function(result){
+        console.log(result);
+    });
+
+    testService.test3(function (result) {
+        console.log(result);
+    });
+
+    testService.test4({price: 20000, name:"포도", store:"포도농장"}, function(result){
+        console.log(result);
+    });
+
+    testService.test5({price: 10000, name:"복숭아", store:"복숭아농장"}, function (result) {
+        console.log(result);
+    })
+});
+
+
+
+</script>
+</body>
+</html>

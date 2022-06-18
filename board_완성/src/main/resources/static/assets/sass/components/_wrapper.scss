@@ -1,0 +1,98 @@
+///
+/// Inverse by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+/* Wrapper */
+
+	.wrapper {
+		@include padding(6rem, 0);
+
+		&.special {
+			text-align: center;
+
+			ul.actions {
+				@include vendor('justify-content','center');
+			}
+		}
+
+		&.alt {
+			header, footer {
+				margin: 0 auto;
+				width: _size(inner);
+
+				@include breakpoint('<=medium') {
+					max-width: calc(100% - 6rem);
+					width: 100%;
+				}
+
+				@include breakpoint('<=small') {
+					max-width: calc(100% - 4rem);
+					width: 100%;
+				}
+			}
+
+			header {
+				padding-bottom: 5rem;
+			}
+
+			footer {
+				padding-top: 6rem;
+			}
+		}
+
+		&.style1 {
+			background: _palette(accent1);
+		}
+
+		&.style2 {
+			background: _palette(accent2);
+		}
+
+		&.style3 {
+			background: _palette(bg-alt);
+		}
+
+		@include breakpoint('<=large') {
+			@include padding(5rem, 0);
+
+			&.alt {
+				header {
+					padding-bottom: 3rem;
+				}
+
+				footer {
+					padding-top: 5rem;
+				}
+			}
+		}
+
+		@include breakpoint('<=medium') {
+			@include padding(5rem, 0);
+
+			&.alt {
+				header {
+					padding-bottom: 2rem;
+				}
+
+				footer {
+					padding-top: 4rem;
+				}
+			}
+		}
+
+		@include breakpoint('<=small') {
+			@include padding(3rem, 0);
+
+			&.alt {
+				header {
+					padding-bottom: 0;
+				}
+
+				footer {
+					padding-top: 3rem;
+				}
+			}
+		}
+	}

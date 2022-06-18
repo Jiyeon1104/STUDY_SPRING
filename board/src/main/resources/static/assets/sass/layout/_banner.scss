@@ -1,0 +1,55 @@
+///
+/// Inverse by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+/* Banner */
+
+	#banner {
+		@include color(invert);
+
+		.wrapper {
+			padding-top: 4rem;
+
+			> .inner {
+				> :last-child {
+					margin-bottom: 0;
+				}
+
+				> .image {
+					@include vendor('transition', (
+						'opacity 1s ease-in-out',
+						'transform 1s ease-in-out'
+					));
+				}
+
+				> .feature-icons {
+					@include vendor('transition', (
+						'opacity 1s ease-in-out',
+						'transform 1s ease-in-out'
+					));
+				}
+			}
+
+			@include breakpoint('<=large') {
+				padding-top: 2.5rem;
+			}
+		}
+
+		body.is-preload & {
+			.wrapper {
+				> .inner {
+					> .image {
+						@include vendor('transform', 'scale(0.9875)');
+						opacity: 0;
+					}
+
+					> .feature-icons {
+						@include vendor('transform', 'translateY(0.5rem)');
+						opacity: 0;
+					}
+				}
+			}
+		}
+	}

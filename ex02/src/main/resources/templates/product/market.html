@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>상품 바코드</title>
+</head>
+<body>
+    <table border="1">
+        <tr>
+            <th>상품명</th>
+            <th>바코드 번호</th>
+        </tr>
+        <tr>
+            <td>오징어 땅콩</td>
+            <td>4383927</td>
+        </tr>
+        <tr>
+            <td>초코 우유</td>
+            <td>0832147</td>
+        </tr>
+        <tr>
+            <td>벌꿀 피자</td>
+            <td>9841631</td>
+        </tr>
+        <tr>
+            <td>샌드위치</td>
+            <td>5587578</td>
+        </tr>
+    </table>
+    <br>
+    <form action="/ex/check" method="post" name="barcodeForm">
+        <label>
+            상품 바코드 입력<br>
+            <input type="text" name="barcode">
+        </label>
+        <input type="button" onclick="send()" value="완료">
+    </form>
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function send(){
+        if(!barcodeForm.barcode.value){
+            alert("바코드를 입력하세요");
+            return;
+        }
+        barcodeForm.submit();
+    }
+</script>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="/ex/song" name="songForm" method="post">
+        <input type="text" name="score" placeholder="점수 입력">
+        <p id="checkScore"></p>
+        <button type="button">메세지 확인</button>
+    </form>
+</body>
+<script>
+    const btn = document.querySelector("button[type='button']");
+    const result = document.querySelector("p#checkScore");
+    btn.addEventListener("click", function(){
+        if(!songForm.score.value){
+            result.value = "점수를 입력하세요";
+            result.style.color = "red";
+            return;
+        }
+        songForm.submit();
+    })
+</script>
+</html>

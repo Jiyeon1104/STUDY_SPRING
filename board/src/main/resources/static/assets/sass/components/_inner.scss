@@ -1,0 +1,31 @@
+///
+/// Inverse by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+/* Inner */
+
+	.inner {
+		margin: 0 auto;
+		max-width: 70rem;
+		width: _size(inner);
+
+		@include breakpoint('<=xlarge') {
+			max-width: calc(100% - 12rem);
+		}
+
+		@include breakpoint('<=large') {
+			max-width: calc(100% - 6rem);
+		}
+
+		@include breakpoint('<=medium') {
+			max-width: calc(100% - 10rem);
+			width: 100%;
+		}
+
+		@include breakpoint('<=small') {
+			max-width: calc(100% - 4rem);
+			width: 100%;
+		}
+	}

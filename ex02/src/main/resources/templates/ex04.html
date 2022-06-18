@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Ex04</title>
+</head>
+<body>
+    <h1>Ex04</h1>
+    <table border = 1>
+        <tr>
+            <th>번호</th>
+            <th>총점</th>
+            <th>평균</th>
+        <tr th:object="${taskVO}">
+            <td th:text="*{num}"></td>
+            <td th:text="*{kor+eng+math} + '점'"></td>
+            <td th:text="|*{(kor+eng+math) / 3.0}점|"></td>
+        </tr>
+        </tr>
+    </table>
+</body>
+</html>

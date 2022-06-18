@@ -1,0 +1,67 @@
+///
+/// Inverse by Pixelarity
+/// pixelarity.com | hello@pixelarity.com
+/// License: pixelarity.com/license
+///
+
+/* Profiles */
+
+	.profiles {
+		@include vendor('display','flex');
+		@include vendor('align-items','stretch');
+		@include vendor('justify-content','space-between');
+
+		.profile {
+			background: _palette(bg);
+			border-radius: _size(border-radius);
+			box-shadow: 0px 15px 59px -20px rgba(0,0,0,0.35);
+			margin-bottom: _size(element-margin);
+			padding: 3rem 2rem;
+			position: relative;
+			width: 31%;
+
+			&:before {
+				background: _palette(accent1);
+				border-radius: _size(border-radius) _size(border-radius) 0 0;
+				content: '';
+				height: 9rem;
+				left: 0;
+				position: absolute;
+				top: 0;
+				width: 100%;
+			}
+
+			.image {
+				margin: 1rem 0 2rem 0;
+
+				img {
+					border-radius: 100%;
+				}
+			}
+
+			.content {
+				> :last-child {
+					margin-bottom: 0;
+				}
+			}
+		}
+
+		@include breakpoint('<=medium') {
+			@include vendor('flex-direction','column');
+
+			.profile {
+				margin-bottom: _size(element-margin) * 2.5;
+				width: 100%;
+
+				&:last-child {
+					margin-bottom: _size(element-margin);
+				}
+			}
+		}
+
+		@include breakpoint('<=small') {
+			.profile {
+				margin-bottom: _size(element-margin);
+			}
+		}
+	}

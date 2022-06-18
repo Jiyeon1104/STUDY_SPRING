@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <style>
+        body {transform: scale(0.8); margin-top: -50px;}
+    </style>
+</head>
+<body>
+    <!-- Main -->
+    <div id="main">
+        <div class="wrapper">
+            <div class="inner">
+
+                <!-- Elements -->
+                <header class="major">
+                    <h1>Board</h1>
+                    <p>게시글 수정</p>
+                </header>
+                <!-- Table -->
+                <h3><a id="goList" class="button small">목록 보기</a></h3>
+                <div class="content">
+                    <div class="form">
+                        <form method="post" action="/board/modify" th:object="${board}" enctype="multipart/form-data" id="modifyForm">
+                            <input type="hidden" th:field="${criteria.pageNum}">
+                            <input type="hidden" th:field="${criteria.amount}">
+                            <div class="fields">
+                                <div class="field">
+                                    <h4>번호</h4>
+                                    <input type="text" th:field="*{boardBno}" readonly/>
+                                </div>
+                                <div class="field">
+                                    <h4>*제목</h4>
+                                    <input type="text" th:field="*{boardTitle}"/>
+                                </div>
+                                <div class="field">
+                                    <h4>*내용</h4>
+                                    <textarea rows="6" style="resize:none" th:field="*{boardContent}"></textarea>
+                                </div>
+                                <div class="field">
+                                    <h4>*작성자</h4>
+                                    <input type="text" th:field="*{boardWriter}"/>
+                                </div>
+                                <div class="field">
+                                    <h4>첨부파일</h4>
+                                    <input type="file" name="uploadFiles" multiple>
+                                </div>
+                                <div class="field">
+                                    <div class="uploadResult">
+                                        <ul></ul>
+                                    </div>
+                                </div>
+                                <div class="bigPictureWrapper">
+                                    <div class="bigPicture"></div>
+                                </div>
+                            </div>
+                            <ul class="actions special">
+                                <li>
+                                    <input type="submit" class="button" value="수정 완료"/>
+                                </li>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<!-- Scripts -->
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/jquery.dropotron.min.js"></script>
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/util.js"></script>
+<script src="/assets/js/main.js"></script>
+<script th:inline="javascript">
+    let regex = new RegExp("(.*?)\.(exe|sh|zip|alz)");
+    let boardBno = [[${board.boardBno}]];
+    let paging = [[${criteria.listLink}]];
+    const $uploadResult = $(".uploadResult ul");
+
+    // 이미지 원본이 있는 지 검사
+    let check = false;
+    // 애니메이션이 진행중인 지 검사
+    let progress = false;
+    // 이전에 클릭한 이미지 경로 저장
+    let temp = "";
+
+    function showImage(filePath){
+
+        // 만약 temp에 무언가가 들어가 있다면(undefined가 아니라면)
+        if(temp){
+            //현재 클릭한 썸네일의 경로와 이전에 클릭했던 썸네일의 경로를 비교한다.
+            if(filePath == temp){
+                //만약 이전에 눌렀던 썸네일과 동일하다면 애니메이션을 막아준다.
+                //똑같은 거 또 누르지 않게 막아주기
+                return;
+            }
+        }
+
+        // 애니메이션이 진행중일 경우 true
+        if(progress) { return; }
+        // 만약 애니메이션 진행중이 아닐 때에는
+        // 썸네일을 클릭했기 때문에 progress를 true로 변경시켜준다.
+        progress = true;
+
+        //정상적으로 해당 썸네일의 원본이 보이게 된다면,
+        //클릭한 썸네일의 경로를 temp에 담아준다.
+        temp = filePath;
+
+        let time = 0;
+
+        if(check){ //만약 check가 true라면 원본 이미지가 이미 보여지고 있는 상태
+
+            //이미 있는 원본 이미지를 없애준다.
+            $(".bigPicture").animate({width:"0%", height:"0%"}, 1000);
+            setTimeout(function(){
+                $(".bigPictureWrapper").hide();
+                // 애니메이션이 다 끝났을 때
+                progress = false;
+            },950);
+
+            //이미 있는 원본 이미지가 없어지는 데에 걸리는 시간을 time에 담아놓는다.
+            time = 1000;
+        }
+        setTimeout(function(){
+            $(".bigPictureWrapper").css("display", "flex").show();
+            $(".bigPicture").html("<img src='/upload/display?fileName=" + filePath + "'>")
+                .animate({width:"100%", height:"100%"}, 1000);
+            // 이미지 원본이 보이고 있음.
+            check = true;
+
+            setTimeout(function(){
+                // 애니메이션이 다 끝났을 때
+                progress = false;
+            }, 1000);
+
+            //    만약 원본 이미지가 있었다면 time에는 1000이 들어가서 없어지는 동안 기다리게 되고
+            //    원본 이미지가 없었다면 time에는 초기값인 0이 들어가서 클릭한 썸네일의 원본이 바로 보이게 된다.
+        }, time);
+    }
+
+    $(".bigPictureWrapper").on("click", function(){
+        temp = "";
+        // 원본 이미지 클릭 시 사라지는 이벤트 진행중
+        progress = true;
+        $(".bigPicture").animate({width:"0%", height:"0%"}, 1000);
+
+        setTimeout(function(){
+            $(".bigPictureWrapper").hide();
+            //이미지 원본 안보임
+            check = false;
+            //애니메이션이 다 끝났을 때
+            progress = false;
+        },1000);
+    })
+
+    $("input[type='submit']").on("click", function(e){
+        e.preventDefault();
+        let $form = $("form#modifyForm");
+        let str = "";
+        $.each($(".uploadResult ul li"), function(i, li){
+            str += "<input type='hidden' name='fileList[" + i + "].fileName' value='" + $(li).data("filename") + "'>"
+            str += "<input type='hidden' name='fileList[" + i + "].uuid' value='" + $(li).data("uuid") + "'>"
+            str += "<input type='hidden' name='fileList[" + i + "].uploadPath' value='" + $(li).data("uploadpath") + "'>"
+            str += "<input type='hidden' name='fileList[" + i + "].image' value='" + $(li).data("image") + "'>"
+            str += "<input type='hidden' name='fileList[" + i + "].fileSize' value='" + $(li).data("filesize") + "'>"
+        });
+
+        $form.append(str).submit();
+
+    });
+
+
+    function checkExtension(fileName, fileSize){
+        if(regex.test(fileName)){
+            alert("업로드 할 수 없는 파일의 형식입니다.");
+            return false;
+        }
+        if(fileSize >= 5242880){
+            alert("파일 사이즈 초과");
+            return false;
+        }
+        return true;
+    }
+
+    function showUploadResult(files){
+        let str ="";
+        $(files).each(function(i, file){
+            str += "<li data-filesize='" + file.fileSize + "' data-filename='" + file.fileName + "' data-uuid='" + file.uuid + "' data-uploadpath='" + file.uploadPath + "' data-image='" + file.image + "'>";
+            if(file.image){
+                str += "<a href=\"javascript:showImage(\'" + file.uploadPath + "/" + file.uuid + "_" + file.fileName +"\');\"><img src='/upload/display?fileName=" + file.uploadPath + "/s_" + file.uuid + "_"  + file.fileName + "'></a>";
+            }else{
+                str += "<a href='/upload/download?fileName=" + file.uploadPath + "/" + file.uuid + "_" + file.fileName + "'><img src='/images/attach.png' width='100'></a>";
+            }
+            str += "<span data-file='" + file.uploadPath + "/s_" + file.uuid + "_" + file.fileName + "' style='cursor: pointer;'>x</span>"
+            str += "<p>" + file.fileName + "</p>"
+            str += "</li>"
+        });
+        $uploadResult.append(str);
+    }
+
+    (function(){
+        $.getJSON("/upload/list", {boardBno: boardBno}, function(list){
+            showUploadResult(list);
+        })
+    })();
+
+    let arFile = Array.from($("input[type='file']")[0].files);
+
+    $("input[type='file']").on("change", function(e){
+        let formData =   new FormData();
+        let inputFile = $("input[name='uploadFiles']");
+        let files = inputFile[0].files;
+        for(let i=0; i<files.length; i++){
+            if(!checkExtension(files[i].name, files[i].size)){ return; }
+            formData.append("uploadFiles", files[i]);
+        }
+        Array.from($(this)[0].files).forEach(file => arFile.push(file));
+        const dataTransfer = new DataTransfer();
+        arFile.forEach(file => dataTransfer.items.add(file));
+        $(this)[0].files = dataTransfer.files;
+
+        $.ajax({
+            url: "/upload/upload",
+            type: "post",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(files){
+                showUploadResult(files);
+            }
+        });
+    });
+
+    $(".uploadResult").on("click", "span", function(){
+        let $target = $(this).data("file");
+        let $li = $(this).closest("li");
+        let temp = $target.substring($target.indexOf("_") + 1);
+        const dataTransfer = new DataTransfer();
+
+        $li.remove();
+
+        temp = temp.substring(temp.indexOf("_") + 1);
+
+        for(let i=0; i<arFile.length; i++){
+            if(arFile[i].name == temp){
+                arFile.splice(i, 1);
+            }
+        }
+        arFile.forEach(file => dataTransfer.items.add(file));
+        $("input[name='uploadFiles']")[0].files = dataTransfer.files;
+
+    });
+
+    $("a#goList").click(function(e){
+        e.preventDefault();
+        location.href = "/board/list" + paging;
+    });
+
+//    엔터 막아주기
+//     $("input[name='boardTitle']").keydown(function(e){
+//         if(e.keyCode == 13){
+//             e.preventDefault();
+//         }
+//     });
+
+</script>
+</html>
